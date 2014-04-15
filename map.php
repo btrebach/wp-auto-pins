@@ -19,7 +19,7 @@
 			
 <div id="initialize" style="width:100%; height:400px">
 
-<a href="#" onclick="return getOutput();"> CLICK ME FOR ADDRESSES! </a>
+<a href="#" onclick="return getOutput();"> Update Addresses </a>
 <div id="output">waiting for action</div>
   
 <script>
