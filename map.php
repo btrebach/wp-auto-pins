@@ -91,31 +91,8 @@ function getRequest(url, success, error) {
 
 var map;
 
-// function storeAddresses() {
-	
-	// var temp = new Array();
-	// temp = addresses.split(" ");
-	// alert(temp);
-		
-	// map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-	// var myLatLng;
-	// var marker;
 
-	// if (temp.length > 0) {
-		// alert(temp.length);
-		// for (var x in temp) {
-			// myLatlng = new google.maps.LatLng(-25.363882,131.044922);
-			// marker = new google.maps.Marker({
-				// position: myLatlng,
-				// title:"Hello World!"
-			// });
-		// }
-		
-		// marker.setMap(map);
-
-	// }
-// }
-
+// Initialize map
 function initialize() {
   	var mapOptions = {
    		zoom: 3,
@@ -128,11 +105,12 @@ function initialize() {
 
 	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 	
-	google.maps.event.addListener(map, 'click', function(e) {
+	google.maps.event.addListener(map, 'click', function(e) {		// Map is clicked, add markers!
 		placeMarker(map);
 	});
 }
 
+// Adds each marker to the map
 function placeMarker(map) {
 	var temp = addresses.split(" ");
 	
