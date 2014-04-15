@@ -16,6 +16,8 @@
       				}
     			</style>
     		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+			
+<div id="initialize" style="width:100%; height:400px">
 
 <a href="#" onclick="return getOutput();"> CLICK ME FOR ADDRESSES! </a>
 <div id="output">waiting for action</div>
@@ -23,6 +25,8 @@
 <script>
 
 /**** AJAX FUNCTIONS *****/
+
+var addresses = "";
 
 // handles the click event for link 1, sends the query
 function getOutput() {
@@ -42,6 +46,8 @@ function drawError () {
 function drawOutput(responseText) {
     var container = document.getElementById('output');
     container.innerHTML = responseText;
+	addresses = responseText;
+	storeAddresses(addresses);
 }
 // helper function for cross-browser request object
 function getRequest(url, success, error) {
@@ -83,8 +89,32 @@ function getRequest(url, success, error) {
 
 
 
-
 var map;
+
+// function storeAddresses() {
+	
+	// var temp = new Array();
+	// temp = addresses.split(" ");
+	// alert(temp);
+		
+	// map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+	// var myLatLng;
+	// var marker;
+
+	// if (temp.length > 0) {
+		// alert(temp.length);
+		// for (var x in temp) {
+			// myLatlng = new google.maps.LatLng(-25.363882,131.044922);
+			// marker = new google.maps.Marker({
+				// position: myLatlng,
+				// title:"Hello World!"
+			// });
+		// }
+		
+		// marker.setMap(map);
+
+	// }
+// }
 
 function initialize() {
   	var mapOptions = {
@@ -98,17 +128,26 @@ function initialize() {
 
 	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 	
-	var myLatlng = new google.maps.LatLng(-25.363882,131.044922);
-	var marker = new google.maps.Marker({
-	    position: myLatlng,
-	    title:"Hello World!"
+	google.maps.event.addListener(map, 'click', function(e) {
+		placeMarker(map);
 	});
+}
 
-	// To add the marker to the map, call setMap();
-	marker.setMap(map);
+function placeMarker(map) {
+	var temp = addresses.split(" ");
+	
+	for (var x in temp) {
+			var i = parseInt(x);
+			var marker = new google.maps.Marker({
+				position: new google.maps.LatLng(temp[i],temp[i+1]),
+				map: map
+			});
+		
+	}
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
+
 
 </script>
   				</head>

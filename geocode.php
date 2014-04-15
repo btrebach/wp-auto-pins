@@ -49,7 +49,8 @@ function addMarkers() {
 		$lat = $coord[0];	// stores Array values
 		$lng = $coord[1];
 		
-		echo $address." ".$zip." ".$city." ".$country." ".$company." ".$lat." ".$lng."    <br>";		// This is the final output 
+		echo $lat." ".$lng." ";
+//		echo $address.$zip.$city.$country.$company.$lat.$lng;		// This is the final output 
 	} 
 }
 
@@ -84,5 +85,6 @@ function geocode($address) {
 }
 
 addMarkers();		// Function call!
+
 
 ?>
