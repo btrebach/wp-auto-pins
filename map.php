@@ -19,7 +19,8 @@
 			
 <div id="initialize" style="width:100%; height:400px">
 
-<a href="#" onclick="return getOutput();"> Update Addresses </a>
+<button type="button" href="#" onclick="getOutput();"> Update Addresses </button>
+<button type="button" href="#" id="addButton" > Add to Map </button>
 <div id="output">waiting for action</div>
   
 <script>
@@ -45,9 +46,8 @@ function drawError () {
 // handles the response, adds the html
 function drawOutput(responseText) {
     var container = document.getElementById('output');
-    container.innerHTML = responseText;
+    container.innerHTML = "Addresses Updated Successfully!";
 	addresses = responseText;
-	storeAddresses(addresses);
 }
 // helper function for cross-browser request object
 function getRequest(url, success, error) {
@@ -105,7 +105,9 @@ function initialize() {
 
 	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 	
-	google.maps.event.addListener(map, 'click', function(e) {		// Map is clicked, add markers!
+	var addButton = document.getElementById('addButton');
+	
+	google.maps.event.addDomListener(addButton, 'click', function(e) {		// Map is clicked, add markers!
 		placeMarker(map);
 	});
 }
@@ -129,7 +131,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
 </script>
   				</head>
-  			<body>
+  	<body>	// onload function here to pull addresses
    		<div id="map-canvas"></div>
   	</body>
 </html>

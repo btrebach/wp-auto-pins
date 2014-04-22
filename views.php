@@ -209,13 +209,6 @@ class WPBDP_DirectoryController {
 		
 		include "map.php";
 		
-		/** Div for Map (this code doesn't work in OSX or WINDOWS - reason unknown) **
-		?> 
-			<div class="map" style="width:100%; height:400px">
-				<? include "map.php" ?>
-			</div>
-		<?
-	**/
 		
 		// *********************************** TEST **********************************
 	
@@ -328,19 +321,12 @@ class WPBDP_DirectoryController {
         $html = '';
 		
 		
-		// ******************************************************************** TEST
+		// ******************************************************************** MAP
 		
 		include "map.php";
 		
-		/** Div for Map (this code doesn't work in OSX or WINDOWS - reason unknown) **
-		?> 
-			<div class="map" style="width:100%; height:400px">
-				<? include "map.php" ?>
-			</div>
-		<?
-		**/
 		
-		// *********************************** TEST **********************************
+		// *********************************** MAP  **********************************
 	
 
         if ( count(get_terms(WPBDP_CATEGORY_TAX, array('hide_empty' => 0))) == 0 ) {
