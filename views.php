@@ -205,12 +205,12 @@ class WPBDP_DirectoryController {
     /* display listings */
     public function view_listings($include_buttons=false) {
 	
-		// ******************************************************************** TEST
+		/********************************************************************  */
 		
 		include "map.php";
 		
 		
-		// *********************************** TEST **********************************
+		/*********************************** TEST ********************************/
 	
         $paged = 1;
 
@@ -321,12 +321,12 @@ class WPBDP_DirectoryController {
         $html = '';
 		
 		
-		// ******************************************************************** MAP
+		/********************************************************************  */
 		
 		include "map.php";
 		
 		
-		// *********************************** MAP  **********************************
+		/*********************************** TEST ********************************/
 	
 
         if ( count(get_terms(WPBDP_CATEGORY_TAX, array('hide_empty' => 0))) == 0 ) {
@@ -557,7 +557,15 @@ class WPBDP_DirectoryController {
 
             $listings_api = wpbdp_listings_api();
             $results = $listings_api->search( $search_args );
+			
         }
+		/********************************************************************  */
+		
+		include "map.php";
+		
+		
+		/*********************************** TEST ********************************/
+	
 
         $form_fields = wpbdp_get_form_fields( array( 'display_flags' => 'search', 'validators' => '-email' ) );
         $fields = '';

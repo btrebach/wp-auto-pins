@@ -7,27 +7,30 @@
 				content="initial-scale=1.0, user-scalable=no">
     			<meta charset="utf-8">
     			<style>
-      				.gmnoprint img { max-width: none; }
-      				html, body, #map-canvas {
+      				.gmnoprint img { 
+						max-width: none; 
+					}
+					html, body, #map-canvas {
 	       				height: 100%;
-					width: 100%;
-					margin: 0px;
-					padding: 0px
+						width: 100%;
+						margin: 0px;
+						padding: 0px
       				}
     			</style>
     		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
 			
 <div id="initialize" style="width:100%; height:400px">
 
-<button type="button" href="#" onclick="getOutput();"> Update Addresses </button>
-<button type="button" href="#" id="addButton" > Add to Map </button>
-<div id="output">waiting for action</div>
+<button type="button" href="#" id="view_map_button" onclick="" > View Map </button>
+<div id="output">waiting...</div>
   
 <script>
 
 /**** AJAX FUNCTIONS *****/
 
 var addresses = "";
+var searchResults = "";
+console.log("whatt");
 
 // handles the click event for link 1, sends the query
 function getOutput() {
@@ -46,12 +49,14 @@ function drawError () {
 // handles the response, adds the html
 function drawOutput(responseText) {
     var container = document.getElementById('output');
-    container.innerHTML = "Addresses Updated Successfully!";
+    container.innerHTML = responseText;
 	addresses = responseText;
 }
 // helper function for cross-browser request object
 function getRequest(url, success, error) {
     var req = false;
+	searchResults = '<?php if ($results != null) { echo(implode(" ",$results)); }  ?>';		// get search results if they exist
+	
     try{
         // most browsers
         req = new XMLHttpRequest();
@@ -78,7 +83,7 @@ function getRequest(url, success, error) {
             ;
         }
     }
-    req.open("GET", url, true);
+	req.open("GET", url.concat("?searchResults=").concat(searchResults), true);		// calls a request to open geocode file, sends search results as parameter
     req.send(null);
     return req;
 }
@@ -87,10 +92,7 @@ function getRequest(url, success, error) {
 
 /**** AJAX END ******/
 
-
-
 var map;
-
 
 // Initialize map
 function initialize() {
@@ -105,33 +107,34 @@ function initialize() {
 
 	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 	
-	var addButton = document.getElementById('addButton');
+	var view_map_button = document.getElementById('view_map_button');
 	
-	google.maps.event.addDomListener(addButton, 'click', function(e) {		// Map is clicked, add markers!
-		placeMarker(map);
-	});
+	placeMarkers(map);	// Adds business directory listing addresses to map 
 }
 
 // Adds each marker to the map
-function placeMarker(map) {
+function placeMarkers(map) {
 	var temp = addresses.split(" ");
 	
 	for (var x in temp) {
-			var i = parseInt(x);
-			var marker = new google.maps.Marker({
-				position: new google.maps.LatLng(temp[i],temp[i+1]),
-				map: map
-			});
-		
+		var i = parseInt(x);
+			if (i%2 == 0) {
+				console.log(i);
+				var marker = new google.maps.Marker({
+					position: new google.maps.LatLng(temp[i],temp[i+1]),
+					map: map
+				});
+			}
 	}
 }
 
-google.maps.event.addDomListener(window, 'load', initialize);
+// Loads map after button clicked
+google.maps.event.addDomListener(view_map_button, 'click', initialize)
 
 
 </script>
   				</head>
-  	<body>	// onload function here to pull addresses
+  	<body onload="getOutput()">		<!-- This updates the markers on page load -->
    		<div id="map-canvas"></div>
   	</body>
 </html>
