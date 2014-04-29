@@ -17,7 +17,7 @@
 						padding: 0px
       				}
     			</style>
-    		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    		<script src="https://maps.googleapis.com/maps/api/js?v=3&sensor=false"></script>
 			
 <div id="initialize" style="width:100%; height:400px">
 
@@ -30,7 +30,6 @@
 
 var addresses = "";
 var searchResults = "";
-console.log("whatt");
 
 // handles the click event for link 1, sends the query
 function getOutput() {
@@ -93,6 +92,7 @@ function getRequest(url, success, error) {
 /**** AJAX END ******/
 
 var map;
+var markers = new Array();
 
 // Initialize map
 function initialize() {
@@ -110,26 +110,56 @@ function initialize() {
 	var view_map_button = document.getElementById('view_map_button');
 	
 	placeMarkers(map);	// Adds business directory listing addresses to map 
+	
 }
+
+var contentString = new Array();
 
 // Adds each marker to the map
 function placeMarkers(map) {
-	var temp = addresses.split(" ");
-	
-	for (var x in temp) {
+	var listings = addresses.split(" ");			// split into lat/lng values
+	console.log(listings);
+	for (var x in listings) {
 		var i = parseInt(x);
-			if (i%2 == 0) {
-				console.log(i);
-				var marker = new google.maps.Marker({
-					position: new google.maps.LatLng(temp[i],temp[i+1]),
-					map: map
-				});
+		if (!isNaN(listings[i]) && listings[i] < 300 && listings[i] != "" && i%2 == 0) {		// If value is a number, not a zip code - it's lat/lng
+			var pos = new google.maps.LatLng(listings[i],listings[i+1]);
+			var marker = new google.maps.Marker({
+				position: pos,
+				map: map
+			});
+			var infowindow = new google.maps.InfoWindow();
+			var companyName = listings[i+2];
+			if (listings[i+3] != "") {
+				companyName += " "+listings[i+3];
+				if (listings[i+4] != "") {
+					companyName += " "+listings[i+4];
+					if (listings[i+5] != "") {
+						companyName += " "+listings[i+5];
+					}
+				}
 			}
+			console.log(companyName);
+			contentString[i] = '<div id="content">'+
+			  '<div id="siteNotice">'+
+			  '</div>'+
+			  '<h2 id="firstHeading" class="firstHeading">'+companyName+'</h2>'+
+			  '<div id="bodyContent">'+
+			  '<p><b>Uluru</b>, blah blah blah</p>'+
+			  '</div>'+
+			  '</div>';
+			
+			google.maps.event.addListener(marker, 'click', (function(marker, i) {
+				return function() {
+					infowindow.setContent(contentString[i]);
+					infowindow.open(map, marker);
+				}
+			})(marker, i));
+		}
 	}
 }
 
 // Loads map after button clicked
-google.maps.event.addDomListener(view_map_button, 'click', initialize)
+google.maps.event.addDomListener(view_map_button, 'click', initialize);
 
 
 </script>

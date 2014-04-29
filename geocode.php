@@ -7,6 +7,8 @@ DIRECTIONS:
    -Navigate to Manage Form Fields
    -Click 'Add New Form Field'
    -Repeat to add fields 'Address', 'Zip', 'City', 'Country'
+   
+   *Move this file, map.php, and views.php to wp-content/plugins/business-directory-plugin/views folder
 **/
 
 
@@ -47,24 +49,23 @@ function addMarkers() {
 		$company = $row['company']." ";
 		$coord = explode(" ",geocode($address.$zip.$city.$country));	// create lat-lng Array using geocode function
 		
-		if ($searchResults != null) {
+		if ($searchResults != null) {	// Search query, return searched listings
 			$id = $row['id'];
-	
-			if (in_array($id, $searchResults)) {
-					
-				$lat = $coord[0];	// stores Array values
+
+			if (in_array($id, $searchResults)) {	// return only ID's in search query
+			
+				$lat = $coord[0];	
 				$lng = $coord[1];
-				
-				echo $lat." ".$lng." ";
-		//		echo $address.$zip.$city.$country.$company.$lat.$lng;		// This is the final output 
+				echo $lat." ".$lng." ".$company." ".$address." ".$zip." ".$city." ".$country." ";		// This is the final output 
+			
 			}
-		} else {
-					
-				$lat = $coord[0];	// stores Array values
+			
+		} else {						// No search, return all listings			
+		
+				$lat = $coord[0];	
 				$lng = $coord[1];
-				
-				echo $lat." ".$lng." ";
-		//		echo $address.$zip.$city.$country.$company.$lat.$lng;		// This is the final output 
+				echo $lat." ".$lng." ".$company." ".$address." ".$zip." ".$city." ".$country." ";		// This is the final output 
+		
 		}
 	} 
 }
