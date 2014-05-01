@@ -133,6 +133,12 @@ function placeMarkers(map) {
 			});
 			var infowindow = new google.maps.InfoWindow();
 			var category;
+			var addressIndex;
+			var address;
+			var zip;
+			var cityIndex;
+			var cityAndCountry;
+			
 			var companyName = listings[i+2];
 			if (listings[i+3] != "") {
 				companyName += " "+listings[i+3];
@@ -142,21 +148,71 @@ function placeMarkers(map) {
 						companyName += " "+listings[i+5];
 					} else {
 						category = listings[i+6];
+						addressIndex = i+8;
 					}
 				} else {
 					category = listings[i+5];
+					addressIndex = i+7;
 				}
 			} else {
 				category = listings[i+4];
+				addressIndex = i+6;
 			}
-			console.log(companyName);
+			address = listings[addressIndex];
+			if (listings[addressIndex+1] != "") {
+				address += " "+listings[addressIndex+1];
+				if (listings[addressIndex+2] != "") {
+					address += " "+listings[addressIndex+2];
+					if (listings[addressIndex+3] != "") {
+						address += " "+listings[addressIndex+3];
+						if (listings[addressIndex+4] != "") {
+							address += " "+listings[addressIndex+4];
+						} else {
+							zip = listings[addressIndex+5];
+							cityIndex = addressIndex+7;
+						} 
+					} else {
+						zip = listings[addressIndex+4];
+						cityIndex = addressIndex+6;
+					}
+				} else {
+					zip = listings[addressIndex+3];
+					cityIndex = addressIndex+5;
+				}
+			} else {
+				zip = listings[addressIndex+2];
+				cityIndex = addressIndex+4;
+			}
+			cityAndCountry = listings[cityIndex];
+			if (isNaN(listings[cityIndex+1]) ||	listings[cityIndex+1] == "") {
+				cityAndCountry += " "+listings[cityIndex+1];
+				if (isNaN(listings[cityIndex+2]) || listings[cityIndex+2] == "") {
+					cityAndCountry += " "+listings[cityIndex+2];
+					if (isNaN(listings[cityIndex+3]) || listings[cityIndex+3] == "") {
+						cityAndCountry += " "+listings[cityIndex+3];
+						if (isNaN(listings[cityIndex+4]) || listings[cityIndex+4] == "") {
+							cityAndCountry += " "+listings[cityIndex+4];
+							if (isNaN(listings[cityIndex+5]) && listings[cityIndex+5] != "") {
+								cityAndCountry += " "+listings[cityIndex+5];
+								if (isNaN(listings[cityIndex+6]) && listings[cityIndex+6] != "") {
+									cityAndCountry += " "+listings[cityIndex+6];
+								}
+							}
+						}
+					}
+				}
+			} 
+			
+			
 			contentString[i] = '<div id="content">'+
 			  '<div id="siteNotice">'+
 			  '</div>'+
 			  '<h2 id="firstHeading" class="firstHeading">'+companyName+'</h2>'+
 			  '<div id="bodyContent">'+
 			  '<p><b>'+category+'</b></p>'+
-			  '</div>'+
+			  '<p>'+address+'</p>'+
+			  '<p>'+zip+'</p>'+
+			  '<p>'+cityAndCountry+'</p>'+
 			  '</div>';
 			
 			google.maps.event.addListener(marker, 'click', (function(marker, i) {
