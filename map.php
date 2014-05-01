@@ -16,13 +16,15 @@
 						margin: 0px;
 						padding: 0px
       				}
+					#map-canvas {
+						display:none;
+					}
     			</style>
     		<script src="https://maps.googleapis.com/maps/api/js?v=3&sensor=false"></script>
 			
 <div id="initialize" style="width:100%; height:400px">
 
-<button type="button" href="#" id="view_map_button" onclick="" > View Map </button>
-<div id="output">waiting...</div>
+<button type="button" href="#" id="view_map_button" onclick="" > Loading Map </button>
   
 <script>
 
@@ -30,6 +32,7 @@
 
 var addresses = "";
 var searchResults = "";
+var mapReady = false;
 
 // handles the click event for link 1, sends the query
 function getOutput() {
@@ -47,8 +50,9 @@ function drawError () {
 }
 // handles the response, adds the html
 function drawOutput(responseText) {
-    var container = document.getElementById('output');
-    container.innerHTML = responseText;
+	var container = document.getElementById('view_map_button');
+    container.innerHTML = "View Map";
+	mapReady = true;
 	addresses = responseText;
 }
 // helper function for cross-browser request object
@@ -128,6 +132,7 @@ function placeMarkers(map) {
 				map: map
 			});
 			var infowindow = new google.maps.InfoWindow();
+			var category;
 			var companyName = listings[i+2];
 			if (listings[i+3] != "") {
 				companyName += " "+listings[i+3];
@@ -135,8 +140,14 @@ function placeMarkers(map) {
 					companyName += " "+listings[i+4];
 					if (listings[i+5] != "") {
 						companyName += " "+listings[i+5];
+					} else {
+						category = listings[i+6];
 					}
+				} else {
+					category = listings[i+5];
 				}
+			} else {
+				category = listings[i+4];
 			}
 			console.log(companyName);
 			contentString[i] = '<div id="content">'+
@@ -144,7 +155,7 @@ function placeMarkers(map) {
 			  '</div>'+
 			  '<h2 id="firstHeading" class="firstHeading">'+companyName+'</h2>'+
 			  '<div id="bodyContent">'+
-			  '<p><b>Uluru</b>, blah blah blah</p>'+
+			  '<p><b>'+category+'</b></p>'+
 			  '</div>'+
 			  '</div>';
 			
@@ -159,10 +170,32 @@ function placeMarkers(map) {
 }
 
 // Loads map after button clicked
-google.maps.event.addDomListener(view_map_button, 'click', initialize);
-
+document.getElementById("view_map_button").onclick=function(){
+	if (mapReady) {
+		initialize();
+	}
+};
 
 </script>
+	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script>
+	
+	/*** ---- Jquery Script on Click ****/
+	$("#view_map_button").click(function(){
+		if (mapReady) {
+			// Toggle Map
+			$('#map-canvas').toggle();
+			
+			// Initialize Map
+			initialize();
+			
+			// Button Text Change
+			var txt = $("#map-canvas").is(':visible') ? 'Hide Map' : 'View Map';
+			$("#view_map_button").html(txt);
+		}
+	});
+
+	</script>
   				</head>
   	<body onload="getOutput()">		<!-- This updates the markers on page load -->
    		<div id="map-canvas"></div>

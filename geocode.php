@@ -27,15 +27,18 @@ function addMarkers() {
 	// Query to pull all addresses from Business Directory
 	$addresses = $wpdb->query(
 		"
-		SELECT DISTINCT pm1.post_id 'id',
+		SELECT DISTINCT pm1.post_id 'id', t.name AS category,
 		(SELECT pm.meta_value FROM wp_postmeta pm WHERE pm.meta_key = '_wpbdp[fields][10]' AND pm.post_id = pm1.post_id ) AS address,
 		(SELECT pm.meta_value FROM wp_postmeta pm WHERE pm.meta_key = '_wpbdp[fields][11]' AND pm.post_id = pm1.post_id) AS zip,
 		(SELECT pm.meta_value FROM wp_postmeta pm WHERE pm.meta_key = '_wpbdp[fields][12]' AND pm.post_id = pm1.post_id) AS city,
 		(SELECT pm.meta_value FROM wp_postmeta pm WHERE pm.meta_key = '_wpbdp[fields][13]' AND pm.post_id = pm1.post_id) AS country,
 		(SELECT p.post_title 'title' FROM wp_posts p WHERE p.ID = pm1.post_id) AS company 
 
-		FROM wp_posts p, wp_postmeta pm1
+		FROM wp_terms t, wp_term_taxonomy tx, wp_posts p, wp_postmeta pm1, wp_term_relationships tr
 		WHERE p.ID = pm1.post_id
+		AND tr.object_id = p.id
+		AND tr.term_taxonomy_id = tx.term_taxonomy_id 
+		AND tx.term_id = t.term_id
 		AND p.post_type = 'wpbdp_listing'
 		"
 	);
@@ -47,6 +50,7 @@ function addMarkers() {
 		$city = $row['city']." ";
 		$country = $row['country']." ";
 		$company = $row['company']." ";
+		$category = $row['category']." ";
 		$coord = explode(" ",geocode($address.$zip.$city.$country));	// create lat-lng Array using geocode function
 		
 		if ($searchResults != null) {	// Search query, return searched listings
@@ -56,7 +60,7 @@ function addMarkers() {
 			
 				$lat = $coord[0];	
 				$lng = $coord[1];
-				echo $lat." ".$lng." ".$company." ".$address." ".$zip." ".$city." ".$country." ";		// This is the final output 
+				echo $lat." ".$lng." ".$company." ".$category." ".$address." ".$zip." ".$city." ".$country." ";		// This is the final output 
 			
 			}
 			
@@ -64,7 +68,7 @@ function addMarkers() {
 		
 				$lat = $coord[0];	
 				$lng = $coord[1];
-				echo $lat." ".$lng." ".$company." ".$address." ".$zip." ".$city." ".$country." ";		// This is the final output 
+				echo $lat." ".$lng." ".$company." ".$category." ".$address." ".$zip." ".$city." ".$country." ";		// This is the final output 
 		
 		}
 	} 
