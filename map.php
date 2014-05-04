@@ -28,72 +28,11 @@
   
 <script>
 
-/**** AJAX FUNCTIONS *****/
 
 var addresses = "";
 var searchResults = "";
 var mapReady = false;
 
-// handles the click event for link 1, sends the query
-function getOutput() {
-  getRequest(
-      'wp-content/plugins/business-directory-plugin/views/geocode.php', // URL for the PHP file
-       drawOutput,  // handle successful request
-       drawError    // handle error
-  );
-  return false;
-}  
-// handles drawing an error message
-function drawError () {
-    var container = document.getElementById('output');
-    container.innerHTML = 'Bummer: there was an error!';
-}
-// handles the response, adds the html
-function drawOutput(responseText) {
-	var container = document.getElementById('view_map_button');
-    container.innerHTML = "View Map";
-	mapReady = true;
-	addresses = responseText;
-}
-// helper function for cross-browser request object
-function getRequest(url, success, error) {
-    var req = false;
-	searchResults = '<?php if ($results != null) { echo(implode(" ",$results)); }  ?>';		// get search results if they exist
-	
-    try{
-        // most browsers
-        req = new XMLHttpRequest();
-    } catch (e){
-        // IE
-        try{
-            req = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (e) {
-            // try an older version
-            try{
-                req = new ActiveXObject("Microsoft.XMLHTTP");
-            } catch (e){
-                return false;
-            }
-        }
-    }
-    if (!req) return false;
-    if (typeof success != 'function') success = function () {};
-    if (typeof error!= 'function') error = function () {};
-    req.onreadystatechange = function(){
-        if(req .readyState == 4){
-            return req.status === 200 ? 
-                success(req.responseText) : error(req.status)
-            ;
-        }
-    }
-	req.open("GET", url.concat("?searchResults=").concat(searchResults), true);		// calls a request to open geocode file, sends search results as parameter
-    req.send(null);
-    return req;
-}
-
-
-
-/**** AJAX END ******/
 
 var map;
 var markers = new Array();
@@ -121,107 +60,108 @@ var contentString = new Array();
 
 // Adds each marker to the map
 function placeMarkers(map) {
+	var testCount = 0;
 	var listings = addresses.split(" ");			// split into lat/lng values
 	console.log(listings);
 	for (var x in listings) {
 		var i = parseInt(x);
-		if (!isNaN(listings[i]) && listings[i] < 300 && listings[i] != "" && i%2 == 0) {		// If value is a number, not a zip code - it's lat/lng
-			var pos = new google.maps.LatLng(listings[i],listings[i+1]);
+		
+		/* Get Lat/Lng Values */
+		if (listings[i] == "latlng") {			
+			var pos = new google.maps.LatLng(listings[i+1],listings[i+2]);
 			var marker = new google.maps.Marker({
 				position: pos,
 				map: map
 			});
-			var infowindow = new google.maps.InfoWindow();
-			var category;
-			var addressIndex;
-			var address;
-			var zip;
-			var cityIndex;
-			var cityAndCountry;
+		}
+		
+		var infowindow = new google.maps.InfoWindow();
+		var companyName;
+		var category;
+		var address;
+		var zip;
+		var city;
+		var country;
+		
+		/* Get Company Name */
+		if (listings[i] == "name") {				
+			companyName = listings[i+1];
+			if (listings[i+2] != "" && listings[i+2] != "category") {
+				companyName += " "+listings[i+2];
+				if (listings[i+3] != "" && listings[i+3] != "category") {
+					companyName += " "+listings[i+3];
+					if (listings[i+4] != "" && listings[i+4] != "category") {
+						companyName += " "+listings[i+4];
+					} 
+				} 
+			} 
+		}
+		
+		/* Get Company Category */
+		if (listings[i] == "category") {
+			category = listings[i+1];
+		}
 			
-			var companyName = listings[i+2];
-			if (listings[i+3] != "") {
-				companyName += " "+listings[i+3];
-				if (listings[i+4] != "") {
-					companyName += " "+listings[i+4];
-					if (listings[i+5] != "") {
-						companyName += " "+listings[i+5];
-					} else {
-						category = listings[i+6];
-						addressIndex = i+8;
-					}
-				} else {
-					category = listings[i+5];
-					addressIndex = i+7;
-				}
-			} else {
-				category = listings[i+4];
-				addressIndex = i+6;
-			}
-			address = listings[addressIndex];
-			if (listings[addressIndex+1] != "") {
-				address += " "+listings[addressIndex+1];
-				if (listings[addressIndex+2] != "") {
-					address += " "+listings[addressIndex+2];
-					if (listings[addressIndex+3] != "") {
-						address += " "+listings[addressIndex+3];
-						if (listings[addressIndex+4] != "") {
-							address += " "+listings[addressIndex+4];
-						} else {
-							zip = listings[addressIndex+5];
-							cityIndex = addressIndex+7;
-						} 
-					} else {
-						zip = listings[addressIndex+4];
-						cityIndex = addressIndex+6;
-					}
-				} else {
-					zip = listings[addressIndex+3];
-					cityIndex = addressIndex+5;
-				}
-			} else {
-				zip = listings[addressIndex+2];
-				cityIndex = addressIndex+4;
-			}
-			cityAndCountry = listings[cityIndex];
-			if (isNaN(listings[cityIndex+1]) ||	listings[cityIndex+1] == "") {
-				cityAndCountry += " "+listings[cityIndex+1];
-				if (isNaN(listings[cityIndex+2]) || listings[cityIndex+2] == "") {
-					cityAndCountry += " "+listings[cityIndex+2];
-					if (isNaN(listings[cityIndex+3]) || listings[cityIndex+3] == "") {
-						cityAndCountry += " "+listings[cityIndex+3];
-						if (isNaN(listings[cityIndex+4]) || listings[cityIndex+4] == "") {
-							cityAndCountry += " "+listings[cityIndex+4];
-							if (isNaN(listings[cityIndex+5]) && listings[cityIndex+5] != "") {
-								cityAndCountry += " "+listings[cityIndex+5];
-								if (isNaN(listings[cityIndex+6]) && listings[cityIndex+6] != "") {
-									cityAndCountry += " "+listings[cityIndex+6];
+		/* Get Company Address */
+		if (listings[i] == "address") {
+			address = listings[i+1];
+			if (listings[i+2] != "" && listings[i+2] != "zip") {
+				address += " "+listings[i+2];
+				if (listings[i+3] != "" && listings[i+3] != "zip") {
+					address += " "+listings[i+3];
+					if (listings[i+4] != "" && listings[i+4] != "zip") {
+						address += " "+listings[i+4];
+						if (listings[i+5] != "" && listings[i+5] != "zip") {
+							address += " "+listings[i+5];
+							if (listings[i+6] != "" && listings[i+6] != "zip") {
+								address += " "+listings[i+6];
+								if (listings[i+7] != "" && listings[i+7] != "zip") {
+									address += " "+listings[i+6];
 								}
 							}
 						}
 					}
 				}
 			} 
-			
-			
-			contentString[i] = '<div id="content">'+
-			  '<div id="siteNotice">'+
-			  '</div>'+
-			  '<h2 id="firstHeading" class="firstHeading">'+companyName+'</h2>'+
-			  '<div id="bodyContent">'+
-			  '<p><b>'+category+'</b></p>'+
-			  '<p>'+address+'</p>'+
-			  '<p>'+zip+'</p>'+
-			  '<p>'+cityAndCountry+'</p>'+
-			  '</div>';
-			
-			google.maps.event.addListener(marker, 'click', (function(marker, i) {
-				return function() {
-					infowindow.setContent(contentString[i]);
-					infowindow.open(map, marker);
-				}
-			})(marker, i));
 		}
+		
+		/* Get Company Zip Code */
+		if (listings[i] == "zip") {
+			zip = listings[i+1];
+		}
+		
+		/* Get Company City */
+		if (listings[i] == "city") {
+			city = listings[i+1];
+			if (listings[i+2] != "" && listings[i+2] != "country") {
+				city += " "+listings[i+2];
+				if (listings[i+3] != "" && listings[i+3] != "country") {
+					city += " "+listings[i+3];
+				}
+			}
+		}
+		
+		/* Get Company Country */
+		if (listings[i] == "country") {
+			country = listings[i+1];
+			if (listings[i+2] != "") {
+				country += listings[i+2];
+			}
+		}
+		
+		/* Write company contents to info window */
+		contentString[i] = '<div>'+
+			'<h2>'+companyName+'</h2>'+
+			'<b>'+category+'</b><br>'+address+'<br>'+zip+'<br>'+city+'<br>'+country+
+			'</div>';
+		
+		/* Create info window */
+		google.maps.event.addListener(marker, 'click', (function(marker, i) {
+			return function() {
+				infowindow.setContent(contentString[i]);
+				infowindow.open(map, marker);
+			}
+		})(marker, i));
 	}
 }
 
@@ -236,7 +176,7 @@ document.getElementById("view_map_button").onclick=function(){
 	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 <script>
 	
-	/*** ---- Jquery Script on Click ****/
+	/** ---- Show/Hide map on button click ---- **/
 	$("#view_map_button").click(function(){
 		if (mapReady) {
 			// Toggle Map
@@ -250,6 +190,25 @@ document.getElementById("view_map_button").onclick=function(){
 			$("#view_map_button").html(txt);
 		}
 	});
+	
+	
+	/** ---- Handles the Ajax request to get listing addresses ---- **/
+	function getOutput() {
+		searchResults = '<?php if ($results != null) { echo(implode(" ",$results)); }  ?>';		// get search results if they exist
+		$.ajax({
+			url: 'wp-content/plugins/business-directory-plugin/views/geocode.php'.concat("?searchResults=").concat(searchResults), // URL for the PHP file
+			complete: function (response) {
+				var container = document.getElementById('view_map_button');
+				container.innerHTML = "View Map";		// changes text inside button
+				mapReady = true;						// map is ready for viewing
+				addresses = response.responseText;		// store responses in this variable
+			},
+			error: function () {
+				alert("It seems there was an error.");
+			},
+		});
+		return false;
+	}
 
 	</script>
   				</head>

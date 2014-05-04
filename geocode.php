@@ -60,7 +60,7 @@ function addMarkers() {
 			
 				$lat = $coord[0];	
 				$lng = $coord[1];
-				echo $lat." ".$lng." ".$company." ".$category." ".$address." ".$zip." ".$city." ".$country." ";		// This is the final output 
+				echo "latlng ".$lat." ".$lng." name ".$company." category ".$category." address ".$address." zip ".$zip." city ".$city." country ".$country." ";		// This is the final output 
 			
 			}
 			
@@ -68,7 +68,7 @@ function addMarkers() {
 		
 				$lat = $coord[0];	
 				$lng = $coord[1];
-				echo $lat." ".$lng." ".$company." ".$category." ".$address." ".$zip." ".$city." ".$country." ";		// This is the final output 
+				echo "latlng ".$lat." ".$lng." name ".$company." category ".$category." address ".$address." zip ".$zip." city ".$city." country ".$country." ";		// This is the final output 
 		
 		}
 	} 
